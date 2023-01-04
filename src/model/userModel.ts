@@ -96,14 +96,17 @@ UserInstance.init({
         type: DataTypes.STRING,
         allowNull: true,
     },
-    verified: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
+    verified:{
+        type:DataTypes.BOOLEAN,
+        allowNull:false,
         validate: {
             notNull: {
-                msg: "user not verified"
+              msg: "User must must be verified",
             },
-        }
+            notEmpty: {
+                msg: "user not verified",
+              },
+          }
     },
     role: {
       type: DataTypes.STRING,

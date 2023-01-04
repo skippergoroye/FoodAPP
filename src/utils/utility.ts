@@ -54,3 +54,8 @@ export const verifySignature = async(signature: string) => {
   return jwt.verify(signature, APP_SECRET) as JwtPayload
 }
 
+
+export const validatePassword = async(enteredPassword: string, savedPassword: string, salt: string) => {
+  return await GeneratePassword(enteredPassword, salt) === savedPassword
+}
+

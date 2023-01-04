@@ -53,6 +53,7 @@ sequelizeDB.sync().then(()=>{
 
 const app = express();
 
+
 app.use(express.json());
 app.use(logger("dev"));
 app.use(cookieParser());
@@ -62,6 +63,7 @@ app.use(cookieParser());
 //Router middleware
 app.use("/", indexRouter);
 app.use("/users", userRouter);
+
 
 
 
