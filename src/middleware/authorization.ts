@@ -3,7 +3,6 @@ import jwt, {JwtPayload} from 'jsonwebtoken';
 import { UserInstance } from '../model/userModel'
 import { APP_SECRET } from '../config';
 import { UserAttributes } from '../interface';
-import { nextTick } from 'process';
 
 
 export const auth = async(req: JwtPayload, res: Response, next: NextFunction)=> {

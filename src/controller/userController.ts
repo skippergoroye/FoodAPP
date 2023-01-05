@@ -249,6 +249,10 @@ export const resendOTP = async (req: Request, res: Response) => {
   }
 };
 
+
+
+
+
 /** ================= PROFILE ===================== **/
 // To get all user youcan use findAll OR findAndCountAll
 // can take rows or count as
@@ -322,10 +326,12 @@ export const getSingleUser = async (req: JwtPayload, res: Response) => {
   }
 };
 
-const updateProfile = async (req: JwtPayload, res: Response) => {
+
+
+
+export const updateUserProfile = async (req: JwtPayload, res: Response) => {
   try {
     const { id } = req.user;
-
     const { firstName, lastName, address, phone } = req.body;
 
     // Joi validation
@@ -364,10 +370,14 @@ const updateProfile = async (req: JwtPayload, res: Response) => {
     return res.status(400).json({
       messege: "Error occured",
     });
-  } catch (error) {
+  } catch(error){
     return res.status(50).json({
       Error: "Internal server error",
       route: "/users/update-profile",
     });
   }
 };
+
+
+
+// Forgot password

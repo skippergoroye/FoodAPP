@@ -38,7 +38,7 @@ export const loginSchema = Joi.object().keys({
 export const updateSchema = Joi.object().keys({
   firstName: Joi.string().required(),
   lastName:Joi.string().required(),
-  email: Joi.string().required(),
+  address: Joi.string().required(),
   phone: Joi.string().required(),
 });
 

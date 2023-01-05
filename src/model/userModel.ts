@@ -19,14 +19,14 @@ UserInstance.init({
         allowNull: false,
         unique: true,
         validate: {
-            notNull: {
-                msg: "Email is required"
-            },
-            isEmail: {
-                msg: "Please provide a valid email"
-            },
-        }
-    },
+          notNull: {
+            msg: "Email address is required",
+          },
+          isEmail: {
+            msg: "please provide a valid email",
+          },
+        },
+      },
     password: {
         type: DataTypes.STRING,
         allowNull: false,
