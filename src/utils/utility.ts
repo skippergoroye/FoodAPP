@@ -15,7 +15,6 @@ export const option = {
 }
 
 
-
 export const registerSchema = Joi.object().keys({
     email: Joi.string().required(),
     phone: Joi.string().required(),
@@ -33,6 +32,20 @@ export const loginSchema = Joi.object().keys({
   email: Joi.string().required(),
   password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
 });
+
+
+
+export const updateSchema = Joi.object().keys({
+  firstName: Joi.string().required(),
+  lastName:Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+});
+
+
+
+
+
 
 
 export const GenerateSalt = async()=>{
@@ -58,4 +71,7 @@ export const verifySignature = async(signature: string) => {
 export const validatePassword = async(enteredPassword: string, savedPassword: string, salt: string) => {
   return await GeneratePassword(enteredPassword, salt) === savedPassword
 }
+
+
+
 

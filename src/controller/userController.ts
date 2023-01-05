@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { UserInstance } from "../model/userModel";
 import { v4 as uuidv4 } from "uuid";
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
 import {
   option,
   registerSchema,
@@ -15,13 +15,11 @@ import {
   verifySignature,
   loginSchema,
   validatePassword,
+  updateSchema,
 } from "../utils";
 import { FromAdminMail, UserSubject } from "../config";
 import { UserAttributes } from "../interface";
 import { JwtPayload } from "jsonwebtoken";
-
-
-
 
 /* =================== Register User ==================== */
 export const Register = async (req: Request, res: Response) => {
@@ -108,12 +106,6 @@ export const Register = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
-
-
-
 /** =================== Verify User ==================== **/
 export const verifyUser = async (req: Request, res: Response) => {
   try {
@@ -160,12 +152,6 @@ export const verifyUser = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
-
-
-
 /** =================== Login Users ==================== **/
 export const Login = async (req: Request, res: Response) => {
   try {
@@ -178,46 +164,40 @@ export const Login = async (req: Request, res: Response) => {
       });
     }
 
-
     const User = (await UserInstance.findOne({
       where: { email: email },
     })) as unknown as UserAttributes;
 
-    if(User.verified === true){
-      // const validation = await validatePassword(password, User.password, User.salt) 
-        const validation = await bcrypt.compare(password, User.password)
+    if (User.verified === true) {
+      // const validation = await validatePassword(password, User.password, User.salt)
+      const validation = await bcrypt.compare(password, User.password);
 
-      if(validation){
-      //Generate Signature for user
-      let signature = await GenerateSignature({
-        id: User.id,
-        email: User.email,
-        verified: User.verified,
-      });
+      if (validation) {
+        //Generate Signature for user
+        let signature = await GenerateSignature({
+          id: User.id,
+          email: User.email,
+          verified: User.verified,
+        });
 
-      return res.status(200).json({
-        message: "You have successfully Logged in",
-        signature,
-        email: User.email,
-        verified: User.verified,
-      })
+        return res.status(200).json({
+          message: "You have successfully Logged in",
+          signature,
+          email: User.email,
+          verified: User.verified,
+        });
       }
     }
     return res.status(400).json({
       Error: "wrong Username or Password",
     });
-  } catch(err){
+  } catch (err) {
     res.status(500).json({
       Error: "Internal server Error",
       route: "/users/login",
     });
   }
 };
-
-
-
-
- 
 
 /** ====================  Resend OTP ================= **/
 export const resendOTP = async (req: Request, res: Response) => {
@@ -230,7 +210,7 @@ export const resendOTP = async (req: Request, res: Response) => {
       where: { email: decode.email },
     })) as unknown as UserAttributes;
 
-    if(User){
+    if (User) {
       // Generate OTP
       const { otp, expiry } = GenerateOTP();
       const updatedUser = (await UserInstance.update(
@@ -241,7 +221,7 @@ export const resendOTP = async (req: Request, res: Response) => {
         { where: { email: decode.email } }
       )) as unknown as UserAttributes;
 
-      if(updatedUser){
+      if (updatedUser) {
         const User = (await UserInstance.findOne({
           where: { email: decode.email },
         })) as unknown as UserAttributes;
@@ -254,14 +234,14 @@ export const resendOTP = async (req: Request, res: Response) => {
         await sendmail(FromAdminMail, User.email, UserSubject, html);
 
         return res.status(200).json({
-          message: "OTP resend to registered phone number and email"
-        })
+          message: "OTP resend to registered phone number and email",
+        });
       }
     }
     return res.status(400).json({
       Error: "Error sending OTP",
     });
-  }catch(error){
+  } catch (error) {
     res.status(500).json({
       Error: "Internal Server Error",
       route: "/users/resend-otp/:signature",
@@ -269,39 +249,31 @@ export const resendOTP = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
-
-
-
 /** ================= PROFILE ===================== **/
 // To get all user youcan use findAll OR findAndCountAll
-// can take rows or count as 
+// can take rows or count as
 // limit : 10 Fetch 10 instances/rows
 // offset : 8 Skip 8 instances/rows
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const limit = req.query.sort as number | undefined
+    const limit = req.query.sort as number | undefined;
     const users = await UserInstance.findAndCountAll({
-      limit : limit,
+      limit: limit,
       // limit : 2,
       // offset: 2
-    })
+    });
     return res.status(200).json({
       message: "You have successfully retrived all users",
       Count: users.count,
-      Users: users.rows
-    })
-  }catch(error){
+      Users: users.rows,
+    });
+  } catch (error) {
     res.status(500).json({
       Error: "Internal Server Error",
       route: "/users/resend-otp/:signature",
     });
   }
-}
-
-
+};
 
 /** ================= OR ===================== **/
 // export const getAllUsers = async (req: Request, res: Response) => {
@@ -323,44 +295,79 @@ export const getAllUsers = async (req: Request, res: Response) => {
 //   }
 // }
 
-
-
-
-
-export const getSingleUser = async(req: JwtPayload, res: Response)=>{
+export const getSingleUser = async (req: JwtPayload, res: Response) => {
   try {
     // const{id}  = req.user
-    const id  = req.user.id
-    
+    const id = req.user.id;
 
     // find the user by id
-    const User  = await UserInstance.findOne({ 
-      where: { id: id }
-    }) as unknown as UserAttributes
+    const User = (await UserInstance.findOne({
+      where: { id: id },
+    })) as unknown as UserAttributes;
 
-    if(User){
+    if (User) {
       return res.status(200).json({
-        User
-      })
+        User,
+      });
     }
     return res.status(400).json({
       messege: "User not found",
-    })
- }catch(error){
-    console.log(error)
+    });
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({
       Error: "Internal server Error",
-      route: "/users/get-user"
-    })
+      route: "/users/get-user",
+    });
   }
-}
+};
 
+const updateProfile = async (req: JwtPayload, res: Response) => {
+  try {
+    const { id } = req.user;
 
+    const { firstName, lastName, address, phone } = req.body;
 
+    // Joi validation
+    const validateResult = updateSchema.validate(req.body, option);
+    if (validateResult.error) {
+      return res.status(400).json({
+        Error: validateResult.error.details[0].message,
+      });
+    }
 
+    // check if te user is a register user
+    const User = (await UserInstance.findOne({
+      where: { id: id },
+    })) as unknown as UserAttributes;
 
+    if (!User) {
+      return res.status(400).json({
+        Error: "You're  are not authorized to update your profile",
+      });
+    }
 
+    const updatedUser = (await UserInstance.update(
+      { firstName, lastName, address, phone },
+      { where: { id: id } }
+    )) as unknown as UserAttributes;
 
-
-
-
+    if(updatedUser){
+      const User = await UserInstance.findOne({
+        where: {id : id},
+      }) as unknown as UserAttributes
+      return res.status(200).json({
+        message: "You have successfully updated your profile",
+        User,
+      });
+    }
+    return res.status(400).json({
+      messege: "Error occured",
+    });
+  } catch (error) {
+    return res.status(50).json({
+      Error: "Internal server error",
+      route: "/users/update-profile",
+    });
+  }
+};
