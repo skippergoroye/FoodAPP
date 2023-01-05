@@ -3,3 +3,4 @@ export interface AuthPayLoad{
     email: string;
     verified: boolean;
 }
+

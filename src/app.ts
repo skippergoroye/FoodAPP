@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import logger from "morgan";
 import cookieParser from "cookie-parser";
-import { sequelizeDB } from "./config/index";
+import {sequelizeDB} from './Database/index'
 import indexRouter from "./routes/index";
 import userRouter from "./routes/Users";
 import dotenv from "dotenv";

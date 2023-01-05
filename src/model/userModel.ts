@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelizeDB } from '../config/index';
+import {sequelizeDB} from '../Database/index';
 import { UserAttributes } from '../interface/UserAttributes';
 
 

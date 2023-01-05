@@ -18,6 +18,7 @@ import {
 } from "../utils";
 import { FromAdminMail, UserSubject } from "../config";
 import { UserAttributes } from "../interface";
+import { JwtPayload } from "jsonwebtoken";
 
 
 
@@ -182,7 +183,7 @@ export const Login = async (req: Request, res: Response) => {
       where: { email: email },
     })) as unknown as UserAttributes;
 
-    if(User){
+    if(User.verified === true){
       // const validation = await validatePassword(password, User.password, User.salt) 
         const validation = await bcrypt.compare(password, User.password)
 
@@ -267,6 +268,92 @@ export const resendOTP = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+
+
+
+
+
+/** ================= PROFILE ===================== **/
+// To get all user youcan use findAll OR findAndCountAll
+// can take rows or count as 
+// limit : 10 Fetch 10 instances/rows
+// offset : 8 Skip 8 instances/rows
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const limit = req.query.sort as number | undefined
+    const users = await UserInstance.findAndCountAll({
+      limit : limit,
+      // limit : 2,
+      // offset: 2
+    })
+    return res.status(200).json({
+      message: "You have successfully retrived all users",
+      Count: users.count,
+      Users: users.rows
+    })
+  }catch(error){
+    res.status(500).json({
+      Error: "Internal Server Error",
+      route: "/users/resend-otp/:signature",
+    });
+  }
+}
+
+
+
+/** ================= OR ===================== **/
+// export const getAllUsers = async (req: Request, res: Response) => {
+//   try {
+//     const users = await UserInstance.findAll({
+//       // order: [
+//       // ['email', 'ASC'],
+//       // ]
+//     });
+//     return res.status(200).json({
+//       message: "You have successfully retrived all users",
+//       users
+//     })
+//   }catch(error){
+//     res.status(500).json({
+//       Error: "Internal Server Error",
+//       route: "/users/resend-otp/:signature",
+//     });
+//   }
+// }
+
+
+
+
+
+export const getSingleUser = async(req: JwtPayload, res: Response)=>{
+  try {
+    // const{id}  = req.user
+    const id  = req.user.id
+    
+
+    // find the user by id
+    const User  = await UserInstance.findOne({ 
+      where: { id: id }
+    }) as unknown as UserAttributes
+
+    if(User){
+      return res.status(200).json({
+        User
+      })
+    }
+    return res.status(400).json({
+      messege: "User not found",
+    })
+ }catch(error){
+    console.log(error)
+    return res.status(500).json({
+      Error: "Internal server Error",
+      route: "/users/get-user"
+    })
+  }
+}
 
 
 

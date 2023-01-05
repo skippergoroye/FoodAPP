@@ -1,14 +1,21 @@
-import express from 'express';
-import { Login, Register, resendOTP, verifyUser } from '../controller/userController';
+import express from "express";
+import { auth } from "../middleware/authorization";
+import {
+  getAllUsers,
+  getSingleUser,
+  Login,
+  Register,
+  resendOTP,
+  verifyUser,
+} from "../controller/userController";
 
+const router = express.Router();
 
-const router = express.Router()
-
-router.post('/signup', Register);
-router.post('/verify/:signature', verifyUser);
-router.post('/login', Login);
-router.get('/resend-otp/:signature', resendOTP);
-
-
+router.post("/signup", Register);
+router.post("/verify/:signature", verifyUser);
+router.post("/login", Login);
+router.get("/resend-otp/:signature", resendOTP);
+router.get("/get-all-users", getAllUsers);
+router.get("/get-user/", auth, getSingleUser);
 
 export default router;
