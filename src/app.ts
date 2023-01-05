@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import {sequelizeDB} from './Database/index'
 import indexRouter from "./routes/index";
 import userRouter from "./routes/Users";
+import adminRouter from "./routes/Admin";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -16,8 +17,6 @@ sequelizeDB.sync().then(()=>{
 }).catch(err=>{
   console.log(err)
 })
-
-
 
 
 // (async () => {
@@ -63,6 +62,7 @@ app.use(cookieParser());
 //Router middleware
 app.use("/", indexRouter);
 app.use("/users", userRouter);
+app.use("/admins", adminRouter);
 
 
 
